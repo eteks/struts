@@ -15,31 +15,19 @@ import org.apache.struts.action.ActionMessage;
  *
  * @author Hari
  */
-public class LoginForm extends org.apache.struts.action.ActionForm {
+public class RegistrationForm extends org.apache.struts.action.ActionForm {
     
     private String name;
+    
     private String email;
-    private String error;
-    private String validate;
-    private String available;
+    
     private String usertype;
+    
+    private String error;
+    
     private String action;
-
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public String getUsertype() {
-        return usertype;
-    }
-
-    public void setUsertype(String usertype) {
-        this.usertype = usertype;
-    }
+    
+    private String available;
 
     public String getAvailable() {
         return available;
@@ -53,20 +41,20 @@ public class LoginForm extends org.apache.struts.action.ActionForm {
         }
     }
 
-    public String getValidate() {
-        return validate;
+    public String getAction() {
+        return action;
     }
 
-    public void setValidate() {
-        this.error = "<span style='color:red'>Please provide valid entries for both fields</span>";
+    public void setAction(String action) {
+        this.action = action;
     }
 
     public String getError() {
         return error;
     }
 
-    public void setError() {
-        this.error = "<span style='color:red'>Drunk? Credentials are wrong!</span>";
+    public void setError(String error) {
+        this.error = error;
     }
 
     public String getEmail() {
@@ -76,8 +64,14 @@ public class LoginForm extends org.apache.struts.action.ActionForm {
     public void setEmail(String email) {
         this.email = email;
     }
-    
-    private int number;
+
+    public String getUsertype() {
+        return usertype;
+    }
+
+    public void setUsertype(String usertype) {
+        this.usertype = usertype;
+    }
 
     /**
      * @return
@@ -96,21 +90,12 @@ public class LoginForm extends org.apache.struts.action.ActionForm {
     /**
      * @return
      */
-    public int getNumber() {
-        return number;
-    }
-
-    /**
-     * @param i
-     */
-    public void setNumber(int i) {
-        number = i;
-    }
+    
 
     /**
      *
      */
-    public LoginForm() {
+    public RegistrationForm() {
         super();
         // TODO Auto-generated constructor stub
     }

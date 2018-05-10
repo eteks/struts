@@ -23,10 +23,11 @@ import java.sql.ResultSet;
 public class LoginAction extends org.apache.struts.action.Action {
 
     /* forward name="success" path="" */
-    private static final String SUCCESS = "success";
+    private static final String SYSTEM = "system";
+    private static final String PDB = "pdb";
     private final static String FAILURE = "failure";
     private final static String VALIDATE = "validate";
-    String name, email;
+    private String name, email, usertype;
     /**
      * This is the action called from the Struts framework.
      *
@@ -46,13 +47,15 @@ public class LoginAction extends org.apache.struts.action.Action {
     LoginForm formBean = (LoginForm) form;
     name = formBean.getName();
     email = formBean.getEmail();
-    System.out.println("Username & Email" + name + email);
+    usertype = formBean.getUsertype();
+    System.out.println("Username & Email" + name + email + usertype);
     
       String ret = "ERROR";
       String result = "";
       Connection conn = null;
-
-      try {
+      
+      if(formBean.getAction().equals("checkUsername")){
+         try {
          String URL = "jdbc:mysql://localhost/struts2";
          Class.forName("com.mysql.jdbc.Driver");
          conn = DriverManager.getConnection(URL, "root", "root");
@@ -68,7 +71,7 @@ public class LoginAction extends org.apache.struts.action.Action {
          while (rs.next()) {
             result = rs.getString(1);
             System.out.println("Name" + result);
-            ret = SUCCESS;
+            ret = SYSTEM;
          }
          if(Integer.parseInt(result) == 1){
              formBean.setAvailable(1);
@@ -87,6 +90,49 @@ public class LoginAction extends org.apache.struts.action.Action {
             }
          }
       }
+      }else if(formBean.getAction().equals("login")){
+         try {
+         String URL = "jdbc:mysql://localhost/struts2";
+         Class.forName("com.mysql.jdbc.Driver");
+         conn = DriverManager.getConnection(URL, "root", "root");
+         String sql = "SELECT COUNT(*) FROM new_table WHERE ";
+         sql+=" username = ? and usertype = ? and email = ?";
+//         System.out.println("SQL query " + sql);
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ps.setString(1, name);
+         ps.setString(2, usertype);
+         ps.setString(3, email);
+//         System.out.println("PS" + ps);
+         ResultSet rs = ps.executeQuery();
+
+         while (rs.next()) {
+            result = rs.getString(1);
+            System.out.println("Name" + result);
+            ret = SYSTEM;
+         }
+         if((Integer.parseInt(result) == 1) && (usertype.equals("system"))){
+//             formBean.setAvailable(1);
+             return mapping.findForward(SYSTEM);
+         }else if((Integer.parseInt(result) == 1) && (usertype.equals("pdb"))){
+             return mapping.findForward(PDB);
+         }else{
+             formBean.setError();
+         }
+                  
+      } catch (Exception e) {
+         ret = "ERROR";
+      } finally {
+         if (conn != null) {
+            try {
+               conn.close();
+            } catch (Exception e) {
+            }
+         }
+      } 
+      
+      }
+
+      
     // perform validation
     if ((name == null) || // name parameter does not exist
             email == null || // email parameter does not exist
@@ -96,9 +142,9 @@ public class LoginAction extends org.apache.struts.action.Action {
         formBean.setValidate();
         return mapping.findForward(FAILURE);
     }
-    if(result.equals(email)){
-        return mapping.findForward(SUCCESS);
-    }
+//    if(result.equals(email)){
+//        return mapping.findForward(SUCCESS);
+//    }
           
 //    formBean.setError();
     return mapping.findForward(FAILURE);
@@ -141,6 +187,6 @@ public class LoginAction extends org.apache.struts.action.Action {
 //   }
     
     
-    return mapping.findForward(FAILURE);
+//    return mapping.findForward(FAILURE);
     }
 }

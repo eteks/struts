@@ -23,5 +23,10 @@
         <h3><bean:message key="welcome.heading"/></h3>
         <p><bean:message key="welcome.message"/></p>
         
+        </br>        
+        <html:link forward="login" paramId="filename">Login</html:link>
+        </br>        
+        <html:link forward="register" paramId="filename">Registration</html:link>
+        
     </body>
 </html:html>

@@ -9,6 +9,7 @@
     <form-beans>
         <form-bean name="LoginForm" type="com.myapp.struts.LoginForm"/>
         <form-bean name="VehicleForm" type="com.myapp.struts.VehicleForm"/>
+        <form-bean name="RegistrationForm" type="com.myapp.struts.RegistrationForm"/>
     </form-beans>
 <!--    <form-beans>
         
@@ -23,11 +24,14 @@
     <global-forwards>
         <forward name="welcome"  path="/Welcome.do"/>
         <forward name="vehicle"  path="/vehicle.do"/>
+        <forward name="login" path="/login.jsp"/>
+        <forward name="register" path="/registration.jsp"/>
     </global-forwards>
 
     <action-mappings>
         <action input="/" name="LoginForm" path="/login" scope="session" type="com.myapp.struts.LoginAction">
-            <forward name="success" path="/success.jsp"/>
+            <forward name="system" path="/vehicle.jsp"/>
+            <forward name="pdb" path="/success.jsp"/>
             <forward name="failure" path="/login.jsp"/>
 <!--            <forward name="validate" path="/login.jsp"/>-->
         </action>
@@ -37,7 +41,12 @@
             <forward name="success" path="/vehicle.jsp"/>
         </action>
         
-        <action path="/Welcome" forward="/login.jsp"/>
+        <action input="/" name="RegistrationForm" path="/registration" scope="session" type="com.myapp.struts.RegistrationAction">
+            <forward name="success" path="/login.jsp"/>
+            <forward name="failure" path="/registration.jsp"/>
+        </action>
+        
+        <!--<action path="/Welcome" forward="/login.jsp"/>-->
     </action-mappings>
     
     <controller processorClass="org.apache.struts.tiles.TilesRequestProcessor"/>

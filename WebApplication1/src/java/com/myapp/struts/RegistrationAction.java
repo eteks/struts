@@ -23,7 +23,8 @@ public class RegistrationAction extends org.apache.struts.action.Action {
 
     /* forward name="success" path="" */
     private static final String SUCCESS = "success";
-    String name, email;
+    private static final String FAILURE = "failure";
+    String name, email, usertype, action;
 
     /**
      * This is the action called from the Struts framework.
@@ -40,23 +41,28 @@ public class RegistrationAction extends org.apache.struts.action.Action {
             HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         
-    LoginForm formBean = (LoginForm) form;
+    RegistrationForm formBean = (RegistrationForm) form;
     name = formBean.getName();
     email = formBean.getEmail();
-    
+    usertype = formBean.getUsertype();
+    action = formBean.getAction();
+    System.out.println("Username & Email" + name + email + usertype+ action);
+        
       String ret = "ERROR";
       String result = "";
       Connection conn = null;
       
-      try {
+    if(action.equals("checkUsername")){
+         try {
          String URL = "jdbc:mysql://localhost/struts2";
          Class.forName("com.mysql.jdbc.Driver");
          conn = DriverManager.getConnection(URL, "root", "root");
-         String sql = "INSERT INTO new_table (username,email) VALUES(?,?)";
+         String sql = "SELECT COUNT(username) FROM new_table WHERE ";
+         sql+="username = ?";
 //         System.out.println("SQL query " + sql);
          PreparedStatement ps = conn.prepareStatement(sql);
          ps.setString(1, name);
-         ps.setString(2, email);
+//         ps.setString(2, email);
 //         System.out.println("PS" + ps);
          ResultSet rs = ps.executeQuery();
 
@@ -65,7 +71,13 @@ public class RegistrationAction extends org.apache.struts.action.Action {
             System.out.println("Name" + result);
             ret = SUCCESS;
          }
-         
+         if(Integer.parseInt(result) > 0){
+             formBean.setAvailable(1);
+             return mapping.findForward(FAILURE);
+         }else{
+             formBean.setAvailable(0);
+         }
+                  
       } catch (Exception e) {
          ret = "ERROR";
       } finally {
@@ -76,19 +88,53 @@ public class RegistrationAction extends org.apache.struts.action.Action {
             }
          }
       }
+      }else if(formBean.getAction().equals("")){
+          try {
+         String URL = "jdbc:mysql://localhost/struts2";
+         Class.forName("com.mysql.jdbc.Driver");
+         conn = DriverManager.getConnection(URL, "root", "root");
+         String sql = "INSERT INTO new_table (username,email,usertype) VALUES(?,?,?)";
+//         System.out.println("SQL query " + sql);
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ps.setString(1, name);
+         ps.setString(2, email);
+         ps.setString(3, usertype);
+         System.out.println("PS" + ps);
+         ps.executeUpdate();
+
+//         while (rs.next()) {
+//            result = rs.getString(1);
+//            System.out.println("Name" + result);
+//            ret = SUCCESS;
+//         }
+//         
+      } catch (Exception e) {
+          System.out.println(e);
+         ret = "ERROR";
+      } finally {
+         if (conn != null) {
+            try {
+               conn.close();
+            } catch (Exception e) {
+            }
+         }
+      }
+      }
+      
+      
     // perform validation
     if ((name == null) || // name parameter does not exist
             email == null || // email parameter does not exist
             name.equals("") || // name parameter is empty
             email.indexOf("@") == -1) {   // email lacks '@'
         
-        formBean.setValidate();
+//        formBean.setValidate();
 //        return mapping.findForward(FAILURE);
     }
-    if(result.equals(email)){
-        return mapping.findForward(SUCCESS);
-    }
+//    if(result.equals(email)){
+//        return mapping.findForward(SUCCESS);
+//    }
         
-        return mapping.findForward(SUCCESS);
+        return mapping.findForward(FAILURE);
     }
 }
